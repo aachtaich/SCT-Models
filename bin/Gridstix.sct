@@ -1,0 +1,63 @@
+stateMachine Gridstix
+
+Boolean PredictFlooding
+Boolean TransmitData
+Boolean OrganizeNetwork
+Boolean CalculateFlowRate
+Boolean MeasureDepth
+Boolean WiFi
+Boolean Bluetooth
+Boolean SPTopology
+Boolean FHTopology
+Boolean DistributedProcessing
+Boolean SingleNodeProcessing
+Float Param Batterylevel
+Float Param Enum StateOfRiver [0..2]
+
+PredictFlooding = 1
+PredictFlooding * 4 = TransmitData + OrganizeNetwork + CalculateFlowRate + MeasureDepth
+TransmitData = Bluetooth + WiFi
+OrganizeNetwork = FHTopology + SPTopology
+CalculateFlowRate = DistributedProcessing + SingleNodeProcessing
+Bluetooth + DistributedProcessing <= 1
+
+compositeState Gridstix_State
+	concernLevel Energy
+		simpleConstraintState No_Efficiency
+			PredictFlooding = 1
+		simpleConstraintState Yes_Efficiency
+			Bluetooth=1
+			SingleNodeProcessing=1		
+	end_concernLevel Energy
+		
+	concernLevel FaultTolerence
+		simpleConstraintState No_FaultTolerence
+			PredictFlooding = 1
+		simpleConstraintState Yes_FaultTolerence
+			WiFi=1
+			FHTopology=1
+	end_concernLevel FaultTolerence
+	
+	concernLevel Accuracy		
+		simpleConstraintState No_Accuracy
+			PredictFlooding = 1
+		simpleConstraintState Yes_Accuracy
+			DistributedProcessing=1
+	end_concernLevel Accuracy
+end_compositeState Gridstix_State
+
+Start transition to Gridstix_State
+Start transition to Gridstix_State.Accuracy.No_Accuracy
+Start transition to Gridstix_State.Energy.No_Efficiency
+Start transition to Gridstix_State.FaultTolerence.No_FaultTolerence
+
+When Gridstix_State if (Batterylevel<40) transition from Gridstix_State.Energy.No_Efficiency to Gridstix_State.Energy.Yes_Efficiency
+When Gridstix_State if (StateOfRiver=0) transition from Gridstix_State.Energy.No_Efficiency to Gridstix_State.Energy.Yes_Efficiency
+When Gridstix_State if (StateOfRiver=1 \/ StateOfRiver=2 ) transition from Gridstix_State.Accuracy.No_Accuracy to Gridstix_State.Accuracy.Yes_Accuracy
+When Gridstix_State if (StateOfRiver=2) transition from Gridstix_State.FaultTolerence.No_FaultTolerence to Gridstix_State.FaultTolerence.Yes_FaultTolerence
+
+
+When Gridstix_State if (Batterylevel>=40) transition from Gridstix_State.Energy.Yes_Efficiency to Gridstix_State.Energy.No_Efficiency
+When Gridstix_State if (StateOfRiver>0) transition from Gridstix_State.Energy.Yes_Efficiency to Gridstix_State.Energy.No_Efficiency
+When Gridstix_State if (StateOfRiver=0 ) transition from Gridstix_State.Accuracy.Yes_Accuracy to Gridstix_State.Accuracy.No_Accuracy
+When Gridstix_State if (StateOfRiver<2) transition from Gridstix_State.FaultTolerence.Yes_FaultTolerence to Gridstix_State.FaultTolerence.No_FaultTolerence

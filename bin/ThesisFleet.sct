@@ -1,0 +1,532 @@
+stateMachine ThesisExample
+
+//The greenLife Fleet elements
+Boolean Fleet
+Boolean Actuator
+Boolean Sprinkler [1,9]
+Boolean Memory [1,9]
+Integer Enum Rotation [1,9]{0, 45, 90, 180, 240, 360}
+Boolean Head [1,9]
+Integer PressureSp [1,9] [0..60] 
+Boolean Rotor [1,9]
+Boolean Spray [1,9]
+Boolean CenterPivor
+Integer Enum EmitterCP {0, 114,232}
+Integer PressureCP [0..60] 
+Boolean SprinklerCP
+Boolean Dripline
+Integer Enum Emitter {0, 114,232}
+Integer PressureDr [0..60]
+Boolean Humidifier
+Boolean Rooftop
+Boolean Position
+Boolean Param IN_open
+Boolean Param IN_close
+Boolean OUT_open
+Boolean OUT_close
+Boolean Partial
+Boolean Roof
+Boolean Shader
+Boolean Glass
+Boolean LightBulb [1,5]
+Boolean MistDispenser
+Boolean MistTemp
+Boolean PressureMD
+Boolean Nozzle
+Boolean AirConditionner [1,4]
+Boolean AirMode[1,4][0..3] // 0=nonSelected 1=Fan 2=cool 3=Heating
+Integer Temp[1,4][0..30] 
+Boolean Speed[1,4][0..3]  //0=nonSelected 1=low 2=medium 3=high
+Boolean Sensor
+Boolean RainSensor
+Integer Enum TimeSpan {0, 10}
+Boolean TempSensor
+Boolean LightSensor
+Boolean HumiditySensor[1,7]
+Boolean Notifier[1,7]
+Boolean Alarm[1,7]
+Boolean Contact[1,7]
+Boolean Bulb[1,7]
+Boolean Mode[1,7]
+Boolean Master[1,7]
+Boolean Slave[1,7]
+Boolean HumidityType[1,7]
+Boolean Air[1,7]
+Boolean Soil[1,7]
+Boolean SmartMeter
+Boolean WaterSupplier
+Boolean TreasholdAlam
+Boolean Source
+Boolean Fertilizer
+Boolean Pump
+Boolean RainWater
+Boolean Mainswater
+Boolean Communication
+Boolean Wifi
+Boolean Zigbee
+Boolean Router
+Boolean Coordinator
+Boolean Topology
+Boolean Distributed
+Boolean Star
+
+//Context variables
+Float Param BatteryLevel[1,7]
+Integer Param Temperature
+Float Param Brightness
+Float Param minBrightness
+Float Param opBrightness
+Float Param TankLevel
+Float Param MinTankWater
+Float Param OpTankWater
+Float Param WaterConsumption
+Boolean Param Rain
+Float Param EConsumption
+Float Param OpConsumption 
+Boolean Param PowerFailure
+Integer Param Month
+Float Param HumidityLevel
+Float Param NormalHumidity
+
+//************************************FLEXIBLE CONSTRAINTS************************************
+
+//----------The main capabilities
+Fleet=Communication
+Fleet=Actuator
+Fleet=Sensor
+Fleet=WaterSupplier
+
+//----------Communication
+Communication=Zigbee
+Communication>=Wifi
+Zigbee=Coordinator
+Zigbee>=Router
+Zigbee>=Topology
+Topology=Distributed+Star
+
+//----------Actuator
+Actuator>=Rooftop
+Rooftop=Position
+Rooftop=Roof
+Position=OUT_open+OUT_close
+Position>=Partial
+Roof=Glass
+Roof>=Shader
+Actuator>=MistDispenser
+MistDispenser >0 -> MistTemp>0 
+MistDispenser = Nozzle
+MistDispenser>0 -> PressureMD >0
+Actuator>=Humidifier
+Actuator>=LightBulb[1] /\ Actuator>=LightBulb[2] /\ Actuator>=LightBulb[3] /\ Actuator>=LightBulb[4] /\ Actuator>=LightBulb[5] /\ Actuator=1 -> ((LightBulb[1]+ LightBulb[2]+ LightBulb[3]+ LightBulb[4]+ LightBulb[5])>0 /\ (LightBulb[1]+ LightBulb[2]+ LightBulb[3]+ LightBulb[4]+ LightBulb[5])<5)
+AirConditionner[1]>0 -> AirMode[1]>0 /\ AirConditionner[1]>0 -> Speed[1]>0 /\ AirConditionner[1]>0 -> Temp[1]>0
+AirConditionner[2]>0 -> AirMode[2]>0 /\ AirConditionner[2]>0 -> Speed[2]>0 /\ AirConditionner[2]>0 -> Temp[2]>0
+AirConditionner[3]>0 -> AirMode[3]>0 /\ AirConditionner[3]>0 -> Speed[3]>0 /\ AirConditionner[3]>0 -> Temp[3]>0
+AirConditionner[4]>0 -> AirMode[4]>0 /\ AirConditionner[4]>0 -> Speed[4]>0 /\ AirConditionner[4]>0 -> Temp[4]>0
+Actuator>=0 -> (Sprinkler[1]+Sprinkler[2]+Sprinkler[3]+Sprinkler[4]+Sprinkler[5]+Sprinkler[6]+Sprinkler[7]+Sprinkler[8]+Sprinkler[9])*CenterPivor= 0 /\ (Sprinkler[1]+Sprinkler[2]+Sprinkler[3]+Sprinkler[4]+Sprinkler[5]+Sprinkler[6]+Sprinkler[7]+Sprinkler[8]+Sprinkler[9])*Dripline=0 /\ (Dripline*CenterPivor=0) /\ (Sprinkler[1]+Sprinkler[2]+Sprinkler[3]+Sprinkler[4]+Sprinkler[5]+Sprinkler[6]+Sprinkler[7]+Sprinkler[8]+Sprinkler[9] + Dripline + CenterPivor >0)
+Sprinkler[1]>0 -> Memory[1]>0 /\ Sprinkler[1]>0 -> Rotation[1]>0 /\ Sprinkler[1]>0 -> PressureSp [1]>0 /\ Sprinkler[1]>0 -> Head [1]>0
+Sprinkler[2]>0 -> Memory[2]>0 /\ Sprinkler[2]>0 -> Rotation[2]>0 /\ Sprinkler[2]>0 -> PressureSp [2]>0 /\ Sprinkler[1]>0 -> Head [2]>0
+Sprinkler[3]>0 -> Memory[3]>0 /\ Sprinkler[3]>0 -> Rotation[3]>0 /\ Sprinkler[3]>0 -> PressureSp [3]>0 /\ Sprinkler[1]>0 -> Head [3]>0
+Sprinkler[4]>0 -> Memory[4]>0 /\ Sprinkler[4]>0 -> Rotation[4]>0 /\ Sprinkler[4]>0 -> PressureSp [4]>0 /\ Sprinkler[1]>0 -> Head [4]>0
+Sprinkler[5]>0 -> Memory[5]>0 /\ Sprinkler[5]>0 -> Rotation[5]>0 /\ Sprinkler[5]>0 -> PressureSp [5]>0 /\ Sprinkler[5]>0 -> Head [5]>0
+Sprinkler[6]>0 -> Memory[6]>0 /\ Sprinkler[6]>0 -> Rotation[6]>0 /\ Sprinkler[6]>0 -> PressureSp [6]>0 /\ Sprinkler[6]>0 -> Head [6]>0
+Sprinkler[7]>0 -> Memory[7]>0 /\ Sprinkler[7]>0 -> Rotation[7]>0 /\ Sprinkler[7]>0 -> PressureSp [7]>0 /\ Sprinkler[7]>0 -> Head [7]>0
+Sprinkler[8]>0 -> Memory[8]>0 /\ Sprinkler[8]>0 -> Rotation[8]>0 /\ Sprinkler[8]>0 -> PressureSp [8]>0 /\ Sprinkler[8]>0 -> Head [8]>0
+Sprinkler[9]>0 -> Memory[9]>0 /\ Sprinkler[9]>0 -> Rotation[9]>0 /\ Sprinkler[9]>0 -> PressureSp [9]>0 /\ Sprinkler[9]>0 -> Head [9]>0
+Head[1] = Spray[1]+ Rotor[1]
+Head[2] = Spray[2]+ Rotor[2]
+Head[3] = Spray[3]+ Rotor[3]
+Head[4] = Spray[4]+ Rotor[4]
+Head[5] = Spray[5]+ Rotor[5]
+Head[6] = Spray[6]+ Rotor[6]
+Head[7] = Spray[7]+ Rotor[7]
+Head[8] = Spray[8]+ Rotor[8]
+Head[9] = Spray[9]+ Rotor[9]
+CenterPivor=SprinklerCP
+CenterPivor >0 -> EmitterCP>0
+CenterPivor >0 -> PressureCP>0
+Dripline >0 -> Emitter>0
+Dripline >0 -> PressureDr>0
+
+//----------Sensor
+Sensor>=SmartMeter
+Sensor>=RainSensor
+RainSensor>0 -> TimeSpan>0
+Sensor>=LightSensor
+Sensor>=TempSensor
+Sensor>=SmartMeter
+Sensor>=HumiditySensor[1] /\ Sensor>=HumiditySensor[2] /\ Sensor>=HumiditySensor[3] /\ Sensor>=HumiditySensor[4] /\ Sensor>=HumiditySensor[5] /\  Sensor>=HumiditySensor[6] /\ Sensor>=HumiditySensor[7] /\ Sensor=1 -> ((HumiditySensor[1]+ HumiditySensor[2]+ HumiditySensor[3]+ HumiditySensor[4]+ HumiditySensor[5] + HumiditySensor[6]+ HumiditySensor[7]>=1) /\ (HumiditySensor[1]+ HumiditySensor[2]+ HumiditySensor[3]+ HumiditySensor[4]+ HumiditySensor[5] + HumiditySensor[6]+ HumiditySensor[7]<=7))
+HumiditySensor[1] >= Notifier[1] /\ HumiditySensor[1] = Mode[1] /\ HumiditySensor[1]= HumidityType[1] /\ HumidityType[1] = Soil[1] /\ HumidityType[1] >= Air[1] /\ Notifier[1] * 3 >= Alarm[1] + Contact[1] + Bulb[1] /\ Mode[1]= Slave[1] + Master[1]
+HumiditySensor[2] >= Notifier[2] /\ HumiditySensor[2] = Mode[2] /\ HumiditySensor[2]= HumidityType[2] /\ HumidityType[2] = Soil[2] /\ HumidityType[2] >= Air[2] /\ Notifier[2] * 3 >= Alarm[2] + Contact[2] + Bulb[2] /\ Mode[2]= Slave[2] + Master[2]
+HumiditySensor[3] >= Notifier[3] /\ HumiditySensor[3] = Mode[3] /\ HumiditySensor[3]= HumidityType[3] /\ HumidityType[3] = Soil[3] /\ HumidityType[3] >= Air[3] /\ Notifier[3] * 3 >= Alarm[3] + Contact[3] + Bulb[3] /\ Mode[3]= Slave[3] + Master[3]
+HumiditySensor[4] >= Notifier[4] /\ HumiditySensor[4] = Mode[4] /\ HumiditySensor[4]= HumidityType[4] /\ HumidityType[4] = Soil[4] /\ HumidityType[4] >= Air[4] /\ Notifier[4] * 3 >= Alarm[4] + Contact[4] + Bulb[4] /\ Mode[4]= Slave[4] + Master[4]
+HumiditySensor[5] >= Notifier[5] /\ HumiditySensor[5] = Mode[5] /\ HumiditySensor[5]= HumidityType[5] /\ HumidityType[5] = Soil[5] /\ HumidityType[5] >= Air[5] /\ Notifier[5] * 3 >= Alarm[5] + Contact[5] + Bulb[5] /\ Mode[5]= Slave[5] + Master[5]
+HumiditySensor[6] >= Notifier[6] /\ HumiditySensor[6] = Mode[6] /\ HumiditySensor[6]= HumidityType[6] /\ HumidityType[6] = Soil[6] /\ HumidityType[6] >= Air[6] /\ Notifier[6] * 3 >= Alarm[6] + Contact[6] + Bulb[6] /\ Mode[6]= Slave[6] + Master[6]
+HumiditySensor[7] >= Notifier[7] /\ HumiditySensor[7] = Mode[7] /\ HumiditySensor[7]= HumidityType[7] /\ HumidityType[7] = Soil[7] /\ HumidityType[7] >= Air[7] /\ Notifier[7] * 3 >= Alarm[7] + Contact[7] + Bulb[7] /\ Mode[7]= Slave[7] + Master[7]
+
+//----------Water Supply
+WaterSupplier>=TreasholdAlam
+WaterSupplier>=Fertilizer
+WaterSupplier>=Pump
+WaterSupplier=Source
+Source=RainWater+Mainswater
+
+//---------Traversal
+RainWater>0 -> Pump>0
+RainWater>0 -> TreasholdAlam>0
+Mainswater>0 -> SmartMeter>0
+Humidifier>0 -> (Air[1]+Air[2]+Air[3]+Air[4]+Air[5]+Air[6]+Air[7]>0)
+OUT_open * (LightBulb[1]+ LightBulb[2]+ LightBulb[3]+ LightBulb[4]+ LightBulb[5]) =0
+
+//************************************ States ************************************
+
+compositeState AW	
+	concernLevel global_AW
+		simpleConstraintState global_AW_state
+			CenterPivor=0
+			Humidifier=0
+			MistDispenser=0
+			Fertilizer=0
+			(Air[1]+Air[2]+Air[3]+Air[4]+Air[5]+Air[6]+Air[7]=0)
+			Router=0
+			Distributed=0
+			Shader=0
+			Actuator>0 -> 
+			(((Sprinkler[1]+Sprinkler[2]+Sprinkler[3]+Sprinkler[4]+Sprinkler[5]+Sprinkler[6]+Sprinkler[7]+Sprinkler[8]+Sprinkler[9])*Dripline =0)
+			/\ (Sprinkler[1]+Sprinkler[2]+Sprinkler[3]+Sprinkler[4]+Sprinkler[5]+Sprinkler[6]+Sprinkler[7]+Sprinkler[8]+Sprinkler[9] + Dripline >= 0)
+			/\ ((Sprinkler[1]+Sprinkler[2]+Sprinkler[3]+Sprinkler[4]+Sprinkler[5]+Sprinkler[6]+Sprinkler[7]+Sprinkler[8]+Sprinkler[9]>=0 /\ Sprinkler[1]+Sprinkler[2]+Sprinkler[3]+Sprinkler[4]+Sprinkler[5]+Sprinkler[6]+Sprinkler[7]+Sprinkler[8]+Sprinkler[9]<=4) \/ Dripline=1))
+			Actuator>0 -> (AirConditionner[1]+AirConditionner[2]+AirConditionner[3]+AirConditionner[4]>=0 /\ AirConditionner[1]+AirConditionner[2]+AirConditionner[3]+AirConditionner[4] <= 4)
+			Actuator>0 -> (LightBulb[1]+ LightBulb[2]+ LightBulb[3]+ LightBulb[4]+ LightBulb[5] >=0 /\ LightBulb[1]+ LightBulb[2]+ LightBulb[3]+ LightBulb[4]+ LightBulb[5] <=5)
+			HumiditySensor[1] >= Notifier[1] /\ HumiditySensor[1] = Mode[1] /\ HumiditySensor[1]= HumidityType[1] /\ HumidityType[1] = Soil[1] /\ HumidityType[1] >= Air[1] /\ ((Notifier[1]>0) ->  (Alarm[1] + Contact[1] + Bulb[1]<=3)) /\ Mode[1]= Slave[1] + Master[1]
+			HumiditySensor[2] >= Notifier[2] /\ HumiditySensor[2] = Mode[2] /\ HumiditySensor[2]= HumidityType[2] /\ HumidityType[2] = Soil[2] /\ HumidityType[2] >= Air[2] /\ ((Notifier[2]>0) ->  (Alarm[2] + Contact[2] + Bulb[2]<=3)) /\ Mode[2]= Slave[2] + Master[2]
+			HumiditySensor[3] >= Notifier[3] /\ HumiditySensor[3] = Mode[3] /\ HumiditySensor[3]= HumidityType[3] /\ HumidityType[3] = Soil[3] /\ HumidityType[3] >= Air[3] /\ ((Notifier[3]>0) ->  (Alarm[3] + Contact[3] + Bulb[3]<=3)) /\ Mode[3]= Slave[3] + Master[3]
+			HumiditySensor[4] >= Notifier[4] /\ HumiditySensor[4] = Mode[4] /\ HumiditySensor[4]= HumidityType[4] /\ HumidityType[4] = Soil[4] /\ HumidityType[4] >= Air[4] /\ ((Notifier[4]>0) ->  (Alarm[4] + Contact[4] + Bulb[4]<=3)) /\ Mode[4]= Slave[4] + Master[4]
+			HumiditySensor[5] >= Notifier[5] /\ HumiditySensor[5] = Mode[5] /\ HumiditySensor[5]= HumidityType[5] /\ HumidityType[5] = Soil[5] /\ HumidityType[5] >= Air[5] /\ ((Notifier[5]>0) ->  (Alarm[5] + Contact[5] + Bulb[5]<=3)) /\ Mode[5]= Slave[5] + Master[5]
+			HumiditySensor[6] >= Notifier[6] /\ HumiditySensor[6] = Mode[6] /\ HumiditySensor[6]= HumidityType[6] /\ HumidityType[6] = Soil[6] /\ HumidityType[6] >= Air[6] /\ ((Notifier[6]>0) ->  (Alarm[6] + Contact[6] + Bulb[6]<=3)) /\ Mode[6]= Slave[6] + Master[6]
+			HumiditySensor[7] >= Notifier[7] /\ HumiditySensor[7] = Mode[7] /\ HumiditySensor[7]= HumidityType[7] /\ HumidityType[7] = Soil[7] /\ HumidityType[7] >= Air[7] /\ ((Notifier[7]>0) ->  (Alarm[7] + Contact[7] + Bulb[7]<=3)) /\ Mode[7]= Slave[7] + Master[7]
+			HumiditySensor[7] >= Notifier[7] /\ HumiditySensor[7] = Mode[7] /\ HumiditySensor[7]= HumidityType[7] /\ HumidityType[7] = Soil[7] /\ HumidityType[7] >= Air[7] /\ Notifier[7] * 7 >= Alarm[7] + Contact[7] + Bulb[7] /\ Mode[7]= Slave[7] + Master[7]
+			Master[1]+Master[2]+Master[3]+Master[4]+Master[5]+Master[6]+Master[7]>=1 \/ Master[1]+Master[2]+Master[3]+Master[4]+Master[5]+Master[6]+Master[7]<=3
+			Sensor=LightSensor
+			Sensor=TempSensor
+			Sensor>=RainSensor
+			Sensor>=SmartMeter
+			Head[1]>0 -> Spray[1]>0
+			Head[2]>0 -> Spray[2]>0
+			Head[3]>0 -> Spray[3]>0
+			Head[4]>0 -> Spray[4]>0
+			Head[5]>0 -> Spray[5]>0
+			Head[6]>0 -> Spray[6]>0
+			Head[7]>0 -> Spray[7]>0
+			Head[8]>0 -> Spray[8]>0
+			Head[9]>0 -> Spray[9]>0
+	end_concernLevel global_AW
+	
+	concernLevel irrigation_AW
+		simpleConstraintState Natural_Irrigation_AW_state
+			Dripline=0
+			(Sprinkler[1]+Sprinkler[2]+Sprinkler[3]+Sprinkler[4]+Sprinkler[5]+Sprinkler[6]+Sprinkler[7]+Sprinkler[8]+Sprinkler[9])=0
+			OUT_open=1
+		compositeState automatic_AW
+			concernLevel automatic_CL_AW
+				simpleConstraintState rapidIrrigation_AW
+					((Sprinkler[1]+Sprinkler[2]+Sprinkler[3]+Sprinkler[4]+Sprinkler[5]+Sprinkler[6]+Sprinkler[7]+Sprinkler[8]+Sprinkler[9])=4)
+					Sprinkler[1]+Sprinkler[3]+Sprinkler[7]+Sprinkler[9] =4
+					Rotation[1]=240
+					Rotation[3]=240
+					Rotation[7]=240
+					Rotation[9]=240
+					PressureSp[1]=30
+					PressureSp[3]=30
+					PressureSp[7]=30
+					PressureSp[9]=30				
+				simpleConstraintState slowIrrigation_AW
+					Dripline=1
+					Emitter=114
+			end_concernLevel automatic_CL_AW
+		end_compositeState automatic_AW
+	end_concernLevel irrigation_AW
+	
+	concernLevel heating_AW
+		simpleConstraintState normal_heating_AW_state
+			LightBulb[1]=1 /\ LightBulb[3]=1 /\ LightBulb[5]=1
+			LightBulb[1]+LightBulb[2]+LightBulb[3]+LightBulb[4]+LightBulb[5]=3
+		simpleConstraintState high_heating_AW_state
+			LightBulb[1]+LightBulb[2]+LightBulb[3]+LightBulb[4]+LightBulb[5]=5
+		simpleConstraintState open_air_AW_state
+			AirConditionner[1]+AirConditionner[2]+AirConditionner[3]+AirConditionner[4]=4
+			Temp[1]=30 /\ Temp[2]=30 /\ Temp[3]=30 /\ Temp[4]=30
+			Speed[1]=3 /\ Speed[2]=3 /\ Speed[3]=3 /\ Speed[4]=3
+			AirMode[1]=3 /\ AirMode[2]=3 /\AirMode[3]=3 /\AirMode[4]=3
+		simpleConstraintState extra_heating_AW_state
+			AirConditionner[1]+AirConditionner[2]+AirConditionner[3]+AirConditionner[4]=2
+			AirConditionner[1]+AirConditionner[3]=2
+			Temp[1]=30  /\ Temp[3]=30 
+			Speed[1]=2 /\ Speed[3]=2 
+			AirMode[1]=3 /\ AirMode[3]=3 
+	end_concernLevel heating_AW
+	
+	concernLevel moitSensing_AW
+		simpleConstraintState acurate_moist_AW_state
+			Master[1]+Master[2]+Master[3]+Master[4]+Master[5]+Master[6]+Master[7]=3
+		simpleConstraintState efficient_moit_AW_state
+			Master[1]+Master[2]+Master[3]+Master[4]+Master[5]+Master[6]+Master[7]=1
+			BatteryLevel[1]<=40 -> Master[1]=0
+			BatteryLevel[2]<=40 -> Master[2]=0
+			BatteryLevel[3]<=40 -> Master[3]=0
+			BatteryLevel[4]<=40 -> Master[4]=0
+			BatteryLevel[5]<=40 -> Master[5]=0
+			BatteryLevel[6]<=40 -> Master[6]=0
+			BatteryLevel[7]<=40 -> Master[7]=0
+	end_concernLevel moitSensing_AW
+	
+	concernLevel brightneAW_AW
+		simpleConstraintState natural_brightness_AW_state
+			OUT_open =1
+		simpleConstraintState automatic_brightness_AW_state
+			OUT_close =1
+			LightBulb[1]+LightBulb[2]+LightBulb[3]+LightBulb[4]+LightBulb[5]>0
+	end_concernLevel brightneAW_AW
+	
+	concernLevel waterSource_AW
+		simpleConstraintState efficientWater_AW_state
+			RainWater =1
+		simpleConstraintState durableWater_AW_state
+			Mainswater =1
+	end_concernLevel waterSource_AW
+end_compositeState AW
+
+
+compositeState SS	
+	concernLevel global_SS
+		simpleConstraintState global_SS_state
+			CenterPivor=0
+			Humidifier=0
+			MistDispenser=0
+			Fertilizer=0
+			(Air[1]+Air[2]+Air[3]+Air[4]+Air[5]+Air[6]+Air[7]=0)
+			Router=0
+			Distributed=0
+			Shader=0
+			Actuator>0 -> 
+			((Sprinkler[1]+Sprinkler[2]+Sprinkler[3]+Sprinkler[4]+Sprinkler[5]+Sprinkler[6]+Sprinkler[7]+Sprinkler[8]+Sprinkler[9])*Dripline =0)
+			/\ (Sprinkler[1]+Sprinkler[2]+Sprinkler[3]+Sprinkler[4]+Sprinkler[5]+Sprinkler[6]+Sprinkler[7]+Sprinkler[8]+Sprinkler[9] + Dripline >= 0)
+			/\ ((Sprinkler[1]+Sprinkler[2]+Sprinkler[3]+Sprinkler[4]+Sprinkler[5]+Sprinkler[6]+Sprinkler[7]+Sprinkler[8]+Sprinkler[9]>=0 /\ Sprinkler[1]+Sprinkler[2]+Sprinkler[3]+Sprinkler[4]+Sprinkler[5]+Sprinkler[6]+Sprinkler[7]+Sprinkler[8]+Sprinkler[9]<=9) \/ Dripline=1)
+			Actuator>0 -> (AirConditionner[1]+AirConditionner[2]+AirConditionner[3]+AirConditionner[4]>=0 /\ AirConditionner[1]+AirConditionner[2]+AirConditionner[3]+AirConditionner[4] <= 4)
+			Actuator>0 -> (LightBulb[1]+ LightBulb[2]+ LightBulb[3]+ LightBulb[4]+ LightBulb[5] >=0 /\ LightBulb[1]+ LightBulb[2]+ LightBulb[3]+ LightBulb[4]+ LightBulb[5] <=3)
+			HumiditySensor[1] >= Notifier[1] /\ HumiditySensor[1] = Mode[1] /\ HumiditySensor[1]= HumidityType[1] /\ HumidityType[1] = Soil[1] /\ HumidityType[1] >= Air[1] /\ ((Notifier[1]>0) -> (Alarm[1] + Bulb[1]<=2 /\ Contact[1]>0) ) /\ Mode[1]= Slave[1] + Master[1]
+			HumiditySensor[2] >= Notifier[2] /\ HumiditySensor[2] = Mode[2] /\ HumiditySensor[2]= HumidityType[2] /\ HumidityType[2] = Soil[2] /\ HumidityType[2] >= Air[2] /\ ((Notifier[2]>0) -> (Alarm[2] + Bulb[2]<=2 /\ Contact[2]>0) ) /\ Mode[2]= Slave[2] + Master[2]
+			HumiditySensor[3] >= Notifier[3] /\ HumiditySensor[3] = Mode[3] /\ HumiditySensor[3]= HumidityType[3] /\ HumidityType[3] = Soil[3] /\ HumidityType[3] >= Air[3] /\ ((Notifier[3]>0) -> (Alarm[3] + Bulb[3]<=2 /\ Contact[3]>0) ) /\ Mode[3]= Slave[3] + Master[3]
+			HumiditySensor[4] >= Notifier[4] /\ HumiditySensor[4] = Mode[4] /\ HumiditySensor[4]= HumidityType[4] /\ HumidityType[4] = Soil[4] /\ HumidityType[4] >= Air[4] /\ ((Notifier[4]>0) -> (Alarm[4] + Bulb[4]<=2 /\ Contact[4]>0) ) /\ Mode[4]= Slave[4] + Master[4]
+			HumiditySensor[5] >= Notifier[5] /\ HumiditySensor[5] = Mode[5] /\ HumiditySensor[5]= HumidityType[5] /\ HumidityType[5] = Soil[5] /\ HumidityType[5] >= Air[5] /\ ((Notifier[5]>0) -> (Alarm[5] + Bulb[5]<=2 /\ Contact[5]>0) ) /\ Mode[5]= Slave[5] + Master[5]
+			HumiditySensor[6] >= Notifier[6] /\ HumiditySensor[6] = Mode[6] /\ HumiditySensor[6]= HumidityType[6] /\ HumidityType[6] = Soil[6] /\ HumidityType[6] >= Air[6] /\ ((Notifier[6]>0) -> (Alarm[6] + Bulb[6]<=2 /\ Contact[6]>0) ) /\ Mode[6]= Slave[6] + Master[6]
+			HumiditySensor[7] >= Notifier[7] /\ HumiditySensor[7] = Mode[7] /\ HumiditySensor[7]= HumidityType[7] /\ HumidityType[7] = Soil[7] /\ HumidityType[7] >= Air[7] /\ ((Notifier[7]>0) -> (Alarm[7] + Bulb[7]<=2 /\ Contact[7]>0) ) /\ Mode[7]= Slave[7] + Master[7]
+			Master[1]+Master[2]+Master[3]+Master[4]+Master[5]+Master[6]+Master[7]>=1 \/ Master[1]+Master[2]+Master[3]+Master[4]+Master[5]+Master[6]+Master[7]<=7
+			Sensor>=LightSensor
+			Sensor=TempSensor
+			Sensor>=RainSensor
+			Sensor=SmartMeter
+			WaterSupplier=TreasholdAlam
+			
+	end_concernLevel global_SS
+	
+	concernLevel irrigation_SS
+		simpleConstraintState Natural_Irrigation_SS_state
+			Dripline=0
+			(Sprinkler[1]+Sprinkler[2]+Sprinkler[3]+Sprinkler[4]+Sprinkler[5]+Sprinkler[6]+Sprinkler[7]+Sprinkler[8]+Sprinkler[9])=0
+		compositeState automatic_SS
+			concernLevel automatic_CL_SS
+				simpleConstraintState rapidAcc_Irrigation_SS
+					(Sprinkler[1]+Sprinkler[2]+Sprinkler[3]+Sprinkler[4]+Sprinkler[5]+Sprinkler[6]+Sprinkler[7]+Sprinkler[8]+Sprinkler[9])=9
+					(Rotor[1]+Rotor[2]+Rotor[3]+Rotor[4]+Rotor[5]+Rotor[6]+Rotor[7]+Rotor[8]+Rotor[9])=9
+					(Rotation[1]=45 /\ Rotation[2]=45 /\ Rotation[3]=45 /\ Rotation[4]=45 /\ Rotation[5]=45 /\ Rotation[6]=45 /\ Rotation[7]=45 /\ Rotation[8]=45 /\ Rotation[9]=45)
+					(PressureSp[1]=60 /\ PressureSp[2]=60 /\ PressureSp[3]=60 /\ PressureSp[4]=60 /\ PressureSp[5]=60 /\ PressureSp[6]=60 /\ PressureSp[7]=60 /\ PressureSp[8]=60 /\ PressureSp[9]=60)
+				simpleConstraintState rapidEff_Irrigation_SS
+					(Sprinkler[1]+Sprinkler[2]+Sprinkler[3]+Sprinkler[4]+Sprinkler[5]+Sprinkler[6]+Sprinkler[7]+Sprinkler[8]+Sprinkler[9])=4 /\ Sprinkler[1]+Sprinkler[3]+Sprinkler[7]+Sprinkler[9] =4
+					(Rotor[1]+Rotor[2]+Rotor[3]+Rotor[4]+Rotor[5]+Rotor[6]+Rotor[7]+Rotor[8]+Rotor[9])=4
+					(Rotation[1]=240 /\  Rotation[3]=240 /\ Rotation[7]=240 /\ Rotation[9]=240 )
+					(PressureSp[1]=30 /\ PressureSp[3]=30 /\ PressureSp[7]=30 /\ PressureSp[9]=30)
+				simpleConstraintState slowIrrigation_SS
+					Dripline=1
+					Emitter=232
+			end_concernLevel automatic_CL_SS
+		end_compositeState automatic_SS
+	end_concernLevel irrigation_SS
+	
+	concernLevel heating_SS
+		simpleConstraintState natural_cooling_SS_state
+			AirConditionner[1]+AirConditionner[2]+AirConditionner[3]+AirConditionner[4]=0
+		simpleConstraintState automatic_cooling_SS_state
+			AirConditionner[1]+AirConditionner[2]+AirConditionner[3]+AirConditionner[4]=1
+			Temp[1]+Temp[2]+Temp[3]+Temp[4]=20 /\ Temp[1]*Temp[2]=0 /\ Temp[3]*Temp[4]=0 /\ Temp[1]*Temp[3]=0 /\ Temp[2]*Temp[4]=0
+			Speed[1]+Speed[2]+Speed[3]+Speed[4]=3 /\ Speed[1]*Speed[2]=0 /\ Speed[3]*Speed[4]=0 /\ Speed[1]*Speed[3]=0 /\ Speed[2]*Speed[4]=0
+			Mode[1]+Mode[2]+Mode[3]+Mode[4]=2 /\ Mode[1]*Mode[2]=0 /\ Mode[3]*Mode[4]=0 /\ Mode[1]*Mode[3]=0 /\ Mode[2]*Mode[4]=0
+	end_concernLevel heating_SS
+	
+	concernLevel moitSensing_SS
+		simpleConstraintState acurate_moist_SS_state
+			Master[1]+Master[2]+Master[3]+Master[4]+Master[5]+Master[6]+Master[7]=7
+		simpleConstraintState efficient_moit_SS_state
+			Master[1]+Master[2]+Master[3]+Master[4]+Master[5]+Master[6]+Master[7]=3
+			BatteryLevel[1]<=20 -> Master[1]=0
+			BatteryLevel[2]<=20 -> Master[2]=0
+			BatteryLevel[3]<=20 -> Master[3]=0
+			BatteryLevel[4]<=20 -> Master[4]=0
+			BatteryLevel[5]<=20 -> Master[5]=0
+			BatteryLevel[6]<=20 -> Master[6]=0
+			BatteryLevel[7]<=20 -> Master[7]=0
+	end_concernLevel moitSensing_SS
+	
+	concernLevel brightness_SS
+		simpleConstraintState natural_brightness_SS_state
+			OUT_open=1
+		simpleConstraintState automatic_brightness_SS_state
+			OUT_close =1 
+			LightBulb[1]+LightBulb[2]+LightBulb[3]+LightBulb[4]+LightBulb[5]=3
+	end_concernLevel brightness_SS
+	
+	concernLevel waterSource_SS
+		simpleConstraintState efficientWater_SS_state
+			RainWater=1
+		simpleConstraintState durableWater_SS_state
+			Mainswater =1
+	end_concernLevel waterSource_SS
+end_compositeState SS
+
+//
+compositeState NoE	
+	concernLevel global_NoE
+		simpleConstraintState global_NoE_state
+			CenterPivor=0
+			Humidifier=0
+			MistDispenser=0
+			Fertilizer=0
+			(Air[1]+Air[2]+Air[3]+Air[4]+Air[5]+Air[6]+Air[7]=0)
+			Router=0
+			Distributed=0
+			Shader=0
+			SmartMeter=0
+			RainSensor=0
+			LightSensor=0
+			TempSensor=0
+			RainWater=0
+			Fertilizer=0
+			TreasholdAlam=0	
+			Actuator>0 -> Dripline=1
+			(Sprinkler[1]+Sprinkler[2]+Sprinkler[3]+Sprinkler[4]+Sprinkler[5]+Sprinkler[6]+Sprinkler[7]+Sprinkler[8]+Sprinkler[9])=0
+			Actuator>0 -> (AirConditionner[1]+AirConditionner[2]+AirConditionner[3]+AirConditionner[4]=0 \/ AirConditionner[1]+AirConditionner[2]+AirConditionner[3]+AirConditionner[4] = 1)
+			LightBulb[1]+LightBulb[2]+LightBulb[3]+LightBulb[4]+LightBulb[5]=0		
+			HumiditySensor[1] >= Notifier[1] /\ HumiditySensor[1] = Mode[1] /\ HumiditySensor[1]= HumidityType[1] /\ HumidityType[1] = Soil[1] /\ HumidityType[1] >= Air[1] /\ (Notifier[1]>0 -> Contact[1]=1) /\ Mode[1]= Slave[1] + Master[1]
+			HumiditySensor[2] >= Notifier[2] /\ HumiditySensor[2] = Mode[2] /\ HumiditySensor[2]= HumidityType[2] /\ HumidityType[2] = Soil[2] /\ HumidityType[2] >= Air[2] /\ (Notifier[2]>0 -> Contact[2]=1) /\ Mode[2]= Slave[2] + Master[2]
+			HumiditySensor[3] >= Notifier[3] /\ HumiditySensor[3] = Mode[3] /\ HumiditySensor[3]= HumidityType[3] /\ HumidityType[3] = Soil[3] /\ HumidityType[3] >= Air[3] /\ (Notifier[3]>0 -> Contact[3]=1) /\ Mode[3]= Slave[3] + Master[3]
+			HumiditySensor[4] >= Notifier[4] /\ HumiditySensor[4] = Mode[4] /\ HumiditySensor[4]= HumidityType[4] /\ HumidityType[4] = Soil[4] /\ HumidityType[4] >= Air[4] /\ (Notifier[4]>0 -> Contact[4]=1) /\ Mode[4]= Slave[4] + Master[4]
+			HumiditySensor[5] >= Notifier[5] /\ HumiditySensor[5] = Mode[5] /\ HumiditySensor[5]= HumidityType[5] /\ HumidityType[5] = Soil[5] /\ HumidityType[5] >= Air[5] /\ (Notifier[5]>0 -> Contact[5]=1) /\ Mode[5]= Slave[5] + Master[5]
+			HumiditySensor[6] >= Notifier[6] /\ HumiditySensor[6] = Mode[6] /\ HumiditySensor[6]= HumidityType[6] /\ HumidityType[6] = Soil[6] /\ HumidityType[6] >= Air[6] /\ (Notifier[6]>0 -> Contact[6]=1) /\ Mode[6]= Slave[6] + Master[6]
+			HumiditySensor[7] >= Notifier[7] /\ HumiditySensor[7] = Mode[7] /\ HumiditySensor[7]= HumidityType[7] /\ HumidityType[7] = Soil[7] /\ HumidityType[7] >= Air[7] /\ (Notifier[7]>0 -> Contact[7]=1) /\ Mode[7]= Slave[7] + Master[7]		
+			(Alarm[1] + Contact[1] + Bulb[1] = 1)
+			(Alarm[2] + Contact[2] + Bulb[2] = 1)
+			(Alarm[3] + Contact[3] + Bulb[3] = 1)
+			(Alarm[4] + Contact[4] + Bulb[4] = 1)
+			(Alarm[5] + Contact[5] + Bulb[5] = 1)
+			(Alarm[6] + Contact[6] + Bulb[6] = 1)
+			(Alarm[7] + Contact[7] + Bulb[7] = 1)
+	end_concernLevel global_NoE
+	
+	concernLevel irrigation_NoE
+		simpleConstraintState Natural_Irrigation_NoE_state
+			Dripline=1
+			Emitter=114
+	end_concernLevel irrigation_NoE
+	
+	concernLevel heating_NoE
+		simpleConstraintState natural_heating_NoE_state
+			AirConditionner[1]+AirConditionner[2]+AirConditionner[3]+AirConditionner[4]=0
+		simpleConstraintState automatic_heating_NoE_state
+			AirConditionner[1]+AirConditionner[2]+AirConditionner[3]+AirConditionner[4]=1
+			Temp[1]+Temp[2]+Temp[3]+Temp[4]=25 /\ Temp[1]*Temp[2]=0 /\ Temp[3]*Temp[4]=0 /\ Temp[1]*Temp[3]=0 /\ Temp[2]*Temp[4]=0
+			Speed[1]+Speed[2]+Speed[3]+Speed[4]=2 /\ Speed[1]*Speed[2]=0 /\ Speed[3]*Speed[4]=0 /\ Speed[1]*Speed[3]=0 /\ Speed[2]*Speed[4]=0
+			Mode[1]+Mode[2]+Mode[3]+Mode[4]=3 /\ Mode[1]*Mode[2]=0 /\ Mode[3]*Mode[4]=0 /\ Mode[1]*Mode[3]=0 /\ Mode[2]*Mode[4]=0
+	end_concernLevel heating_NoE
+	
+	concernLevel moitSensing_NoE
+		simpleConstraintState survival_moist_NoE_state
+			Master[1]+Master[2]+Master[3]+Master[4]+Master[5]+Master[6]+Master[7]=1
+			BatteryLevel[1]<=20 -> Master[1]=0
+			BatteryLevel[2]<=20 -> Master[2]=0
+			BatteryLevel[3]<=20 -> Master[3]=0
+			BatteryLevel[4]<=20 -> Master[4]=0
+			BatteryLevel[5]<=20 -> Master[5]=0
+			BatteryLevel[6]<=20 -> Master[6]=0
+			BatteryLevel[7]<=20 -> Master[7]=0
+	end_concernLevel moitSensing_NoE
+end_compositeState NoE
+
+//Start transitions
+//SS
+Start transition to SS.global_SS.global_SS_state
+Start transition to SS.irrigation_SS.Natural_Irrigation_SS_state
+Start transition to SS.heating_SS.natural_cooling_SS_state
+Start transition to SS.moitSensing_SS.acurate_moist_SS_state
+Start transition to SS.brightness_SS.natural_brightness_SS_state
+Start transition to SS.waterSource_SS.efficientWater_SS_state
+////AW
+Start transition to AW.global_AW.global_AW_state
+Start transition to AW.irrigation_AW.Natural_Irrigation_AW_state
+Start transition to AW.heating_AW.normal_heating_AW_state
+Start transition to AW.moitSensing_AW.acurate_moist_AW_state
+Start transition to AW.brightneAW_AW.natural_brightness_AW_state
+Start transition to AW.waterSource_AW.efficientWater_AW_state
+////NoE
+Start transition to NoE.global_NoE.global_NoE_state
+Start transition to NoE.irrigation_NoE.Natural_Irrigation_NoE_state
+Start transition to NoE.heating_NoE.natural_heating_NoE_state
+Start transition to NoE.moitSensing_NoE.survival_moist_NoE_state
+
+//Composite States
+When SS if (PowerFailure=1) transition from SS to NoE
+When SS if (Month>=10 \/ Month<4) transition from SS to AW
+When SS if (PowerFailure=1) transition from AW to NoE
+When SS if (Month>=4 \/ Month<10) transition from AW to SS
+
+//SS Transitions-----------------
+When SS  if (Rain=0 \/ IN_close=1)  transition from SS.irrigation_SS.Natural_Irrigation_SS_state to SS.irrigation_SS.automatic_SS
+When SS  if (Rain=1 /\ IN_open=1)  transition from SS.irrigation_SS.automatic_SS to SS.irrigation_SS.Natural_Irrigation_SS_state
+//
+When SS.irrigation_SS.automatic_SS  if (MinTankWater<TankLevel /\ TankLevel>=OpTankWater) transition from SS.irrigation_SS.automatic_SS.automatic_CL_SS.rapidAcc_Irrigation_SS to SS.irrigation_SS.automatic_SS.automatic_CL_SS.rapidEff_Irrigation_SS
+When SS.irrigation_SS.automatic_SS  if (TankLevel< MinTankWater) transition from SS.irrigation_SS.automatic_SS.automatic_CL_SS.rapidEff_Irrigation_SS to SS.irrigation_SS.automatic_SS.automatic_CL_SS.slowIrrigation_SS
+When SS.irrigation_SS.automatic_SS  if (MinTankWater<TankLevel /\ TankLevel<OpTankWater)  transition from SS.irrigation_SS.automatic_SS.automatic_CL_SS.slowIrrigation_SS to SS.irrigation_SS.automatic_SS.automatic_CL_SS.rapidEff_Irrigation_SS
+When SS.irrigation_SS.automatic_SS  if (TankLevel>OpTankWater) transition from SS.irrigation_SS.automatic_SS.automatic_CL_SS.slowIrrigation_SS to SS.irrigation_SS.automatic_SS.automatic_CL_SS.rapidAcc_Irrigation_SS
+When SS.irrigation_SS.automatic_SS  if (TankLevel>OpTankWater) transition from SS.irrigation_SS.automatic_SS.automatic_CL_SS.rapidEff_Irrigation_SS to SS.irrigation_SS.automatic_SS.automatic_CL_SS.rapidAcc_Irrigation_SS
+//
+When SS  if (Temperature>30)  transition from SS.heating_SS.natural_cooling_SS_state to SS.heating_SS.automatic_cooling_SS_state
+When SS  if (Temperature<=30)  transition from SS.heating_SS.automatic_cooling_SS_state to SS.heating_SS.natural_cooling_SS_state
+When SS  if (BatteryLevel[1]<60 \/ BatteryLevel[2]<60 \/ BatteryLevel[3]<60 \/ BatteryLevel[4]<60 \/ BatteryLevel[5]<60 \/ BatteryLevel[6]<60 \/ BatteryLevel[7]<60) transition from SS.moitSensing_SS.acurate_moist_SS_state to SS.moitSensing_SS.efficient_moit_SS_state
+When SS  if (BatteryLevel[1]>= 60 /\ BatteryLevel[2]>= 60 /\ BatteryLevel[3]>= 60 /\ BatteryLevel[4]>= 60 /\ BatteryLevel[5]>= 60 /\ BatteryLevel[6]>= 60 /\ BatteryLevel[7]>= 60)  transition from SS.moitSensing_SS.efficient_moit_SS_state to SS.moitSensing_SS.acurate_moist_SS_state
+When SS  if ((Rain=0 \/ HumidityLevel<NormalHumidity))  transition from SS.brightness_SS.automatic_brightness_SS_state to SS.brightness_SS.natural_brightness_SS_state
+When SS  if (Rain=1 /\ HumidityLevel>NormalHumidity)  transition from SS.brightness_SS.natural_brightness_SS_state to SS.brightness_SS.automatic_brightness_SS_state
+When SS  if (TankLevel<MinTankWater)  transition from SS.waterSource_SS.efficientWater_SS_state to SS.waterSource_SS.durableWater_SS_state
+When SS  if (TankLevel>=MinTankWater)  transition from SS.waterSource_SS.durableWater_SS_state to SS.waterSource_SS.efficientWater_SS_state
+//
+////AW Transitions-----------------
+When AW if  (Rain=0 \/ IN_close=1)   transition from AW.irrigation_AW.Natural_Irrigation_AW_state to AW.irrigation_AW.automatic_AW
+When AW if  (Rain=1 /\ IN_open=1)   transition from AW.irrigation_AW.automatic_AW to AW.irrigation_AW.Natural_Irrigation_AW_state
+When AW.irrigation_AW.automatic_AW if  (TankLevel<OpTankWater)  transition from AW.irrigation_AW.automatic_AW.automatic_CL_AW.slowIrrigation_AW to AW.irrigation_AW.automatic_AW.automatic_CL_AW.rapidIrrigation_AW
+When AW.irrigation_AW.automatic_AW if  (TankLevel>OpTankWater)    transition from AW.irrigation_AW.automatic_AW.automatic_CL_AW.rapidIrrigation_AW to AW.irrigation_AW.automatic_AW.automatic_CL_AW.slowIrrigation_AW
+//
+When AW if  (IN_close=1 /\ Temperature>5 /\ Temperature<=10)  transition from AW.heating_AW.normal_heating_AW_state to AW.heating_AW.high_heating_AW_state
+When AW if  (IN_close=1 /\ Temperature>=10)  transition from AW.heating_AW.high_heating_AW_state to AW.heating_AW.normal_heating_AW_state
+When AW if  (IN_close=1 /\ Temperature>=10)  transition from AW.heating_AW.open_air_AW_state to AW.heating_AW.normal_heating_AW_state
+When AW if  (IN_close=1 /\ Temperature<=5)   transition from AW.heating_AW.open_air_AW_state to AW.heating_AW.extra_heating_AW_state
+When AW if  (IN_open=1)  transition from AW.heating_AW.extra_heating_AW_state to AW.heating_AW.open_air_AW_state
+When AW if  (IN_close=1 /\ Temperature<=5)  transition from AW.heating_AW.high_heating_AW_state to AW.heating_AW.extra_heating_AW_state
+When AW if  (IN_close=1 /\ Temperature>5 /\ Temperature<=10)  transition from AW.heating_AW.extra_heating_AW_state to AW.heating_AW.high_heating_AW_state
+When AW if  (IN_close=1 /\ Temperature>5 /\ Temperature<=10)   transition from AW.heating_AW.open_air_AW_state to AW.heating_AW.high_heating_AW_state
+//
+When AW if (BatteryLevel[1]<50 \/ BatteryLevel[2]<50 \/ BatteryLevel[3]<50 \/ BatteryLevel[4]<50 \/ BatteryLevel[5]<50 \/BatteryLevel[6]<50 \/ BatteryLevel[7]<50) transition from AW.moitSensing_AW.acurate_moist_AW_state to AW.moitSensing_AW.efficient_moit_AW_state
+When AW if (BatteryLevel[1]>= 50 /\ BatteryLevel[2]>= 50 /\ BatteryLevel[3]>= 50 /\ BatteryLevel[4]>= 50 /\ BatteryLevel[5]>= 50 /\BatteryLevel[6]>= 50 /\ BatteryLevel[7]>= 50) transition from AW.moitSensing_AW.efficient_moit_AW_state to AW.moitSensing_AW.acurate_moist_AW_state
+When AW if ((EConsumption>OpConsumption /\ Brightness>=opBrightness) \/ (EConsumption<OpConsumption /\ Brightness>=minBrightness)) /\ (Rain=0 \/ HumidityLevel<=NormalHumidity) transition from AW.brightneAW_AW.automatic_brightness_AW_state to AW.brightneAW_AW.natural_brightness_AW_state
+When AW if (EConsumption>OpConsumption /\ Brightness<opBrightness) \/ (Brightness<minBrightness) \/ (Rain=1 /\ HumidityLevel>NormalHumidity) transition from AW.brightneAW_AW.natural_brightness_AW_state to AW.brightneAW_AW.automatic_brightness_AW_state
+When AW if (TankLevel>=MinTankWater) transition from AW.waterSource_AW.durableWater_AW_state to AW.waterSource_AW.efficientWater_AW_state
+When AW if (TankLevel<MinTankWater) transition from AW.waterSource_AW.efficientWater_AW_state to AW.waterSource_AW.durableWater_AW_state
+//
+////NoElectricity Transitions-----------------
+When NoE if (Month=10) transition from NoE.heating_NoE.natural_heating_NoE_state to NoE.heating_NoE.automatic_heating_NoE_state
+When NoE if (Month=4) transition from NoE.heating_NoE.automatic_heating_NoE_state to NoE.heating_NoE.natural_heating_NoE_state

@@ -1,0 +1,517 @@
+stateMachine Landing_Gear_System20
+
+
+///**************/// 
+///* THE SYSTEM *///
+///**************///
+Boolean LGS
+ 
+// PART 1 : Pilot Interface part
+//------------------------------
+Boolean Pilot_Interface
+Boolean Param Enum IN_Handle [0..3]  //0=untouched, 1="up", 2="down", 3=locked
+
+Integer Enum Light[1,3] [0..3] // 0=NotinConf, 1="red", 2="green", 3="orange"
+
+// PART 2 : Mechanic and hydraulic part
+//-------------------------------------
+Boolean Hydraulic_Circuit
+/* Gears */
+Boolean Gear_Set [1,3]
+Integer Enum f_Gear [0..3]  // 0=NotinConf,  1= "extended", 2= "Retracted", 3= "Interm"
+Integer Enum r_Gear [0..3]  // 0=NotinConf,  1= "extended", 2= "Retracted", 3= "Interm"
+Integer Enum l_Gear [0..3]  // 0=NotinConf,  1= "extended", 2= "Retracted", 3= "Interm"
+Boolean f_G_Latching_box [1,2] [0..2] //  0=NotinConf 2=locked, 1=unlocked 
+Boolean r_G_Latching_box [1,2] [0..2] //  0=NotinConf 2=locked, 1=unlocked 
+Boolean l_G_Latching_box [1,2] [0..2] //  0=NotinConf 2=locked, 1=unlocked 
+/* Doors */ 
+Boolean Door_Set[1,3]
+Integer Enum f_Door [0..2] // 0=NotinConf 1="closed", 2="open"
+Integer Enum r_Door [0..2] // 0=NotinConf 1="closed", 2="open"
+Integer Enum l_Door [0..2] // 0=NotinConf 1="closed", 2="open"
+Integer Enum f_D_Latching_box [1,2] [0..2] // 0=NotinConf, 1=unlocked, 0=locked,  // both 1 and 2 are up
+Integer Enum r_D_Latching_box [1,2] [0..2] // 0=NotinConf, 1=unlocked, 0=locked,
+Integer Enum l_D_Latching_box [1,2] [0..2] // 0=NotinConf, 1=unlocked, 0=locked,
+/* Cylinders *///????????????????
+Boolean Cylinder_Set
+Integer Enum f_G_Cylinder [0..2] //0=NotinConf, 1=Pressurised, 2=NonPressurized
+Integer Enum r_G_Cylinder [0..2] //0=NotinConf, 1=Pressurised, 2=NonPressurized
+Integer Enum l_G_Cylinder [0..2] //0=NotinConf, 1=Pressurised, 2=NonPressurized
+Integer Enum f_D_Cylinder [0..2] //0=NotinConf, 1=Pressurised, 2=NonPressurized
+Integer Enum r_D_Cylinder [0..2] //0=NotinConf, 1=Pressurised, 2=NonPressurized
+Integer Enum l_D_Cylinder [0..2] //0=NotinConf, 1=Pressurised, 2=NonPressurized
+
+Integer Param Enum IN_G_cylinders [0..2] //0=NotinConf, 1=high, 2=down
+Integer Param Enum IN_D_cylinders [0..2] //0=NotinConf, 1=high, 2=down
+
+
+/* Electro-Valves *///????????????????
+Boolean EV [1,5]
+Boolean Param IN_Hin [1,5]
+Boolean Param IN_Hout [1,5]
+
+/* Triplicated Sensors */
+Boolean Sensors
+Integer Param Enum IN_Handle_Sensor [1,3] [0..2] // 0=NotinConf 1="up", 2="down"
+Integer Param Enum IN_f_gearPosition_Sensor [1,3] [0..3]  // 0=NotinConf 1="extended", 2= "Retracted", 3= "Interm"
+Integer Param Enum IN_l_gearPosition_Sensor [1,3] [0..3]  // 0=NotinConf 1="extended", 2= "Retracted", 3= "Interm"
+Integer Param Enum IN_r_gearPosition_Sensor [1,3] [0..3]  // 0=NotinConf 1="extended", 2= "Retracted", 3= "Interm"
+Integer Param Enum IN_f_door_Sensor [1,3] [0..2]  // 0=NotinConf 1="closed", 2= "open"
+Integer Param Enum IN_l_door_Sensor [1,3] [0..2]  // 0=NotinConf 1="closed", 2= "open"
+Integer Param Enum IN_r_door_Sensor [1,3] [0..2]  // 0=NotinConf 1="closed", 2= "open"
+
+Integer Enum Analog_switch_Sensor [1,3] [0..2] // 0=NotinConf 1="closed", 2="open"
+Integer Enum f_shockAbsorber_Sensor [1,3] [0..2] // 0=NotinConf 1="ground", 2= "flight"
+Integer Enum l_shockAbsorber_Sensor [1,3] [0..2] // 0=NotinConf 1="ground", 2= "flight"
+Integer Enum r_shockAbsorber_Sensor [1,3] [0..2] // 0=NotinConf 1="ground", 2= "flight"
+Integer Enum Circuit_pressuried_Sensor [1,3] [0..2] // 0=NotinConf 1="nonPressurized", 2= "pressurized"
+
+// PART 3 : Digital part
+//----------------------
+/* Duplicated commands */ //????????????????
+Boolean Digital_Controller[1,2]
+Boolean EV_Commands [1,2]
+Boolean Param IN_General_EV[1,2]
+Boolean Param IN_close_EV[1,2]
+Boolean Param IN_open_EV[1,2]
+Boolean Param IN_retract_EV[1,2]
+Boolean Param IN_extend_EV[1,2] 
+Boolean Cockpit_commands [1,2]
+Boolean gear_locked_down[1,2]
+Boolean gear_maneuvering [1,2]
+Boolean Param IN_anomaly [1,2] 
+
+//PART4 : Emergency Part
+//---------------------
+Boolean Manual_Crank
+Boolean Analog_Controller
+
+//Time related variables
+//----------------------
+Boolean Param IN_Time_to_close_switch
+Float Param AS_Time_to_open 
+Float Param AS_Time_to_open_limit
+Float Param AS_Time_to_close
+Float Param AS_Time_to_close_limit
+Float Param EV_Time_to_open 
+Float Param EV_Time_to_open_limit
+Float Param EV_Time_to_close 
+Float Param EV_Time_to_close_limit 
+Float Param Cy_Time_to_down
+Float Param Cy_Time_to_down_limit
+Float Param Cy_Time_to_high 
+Float Param Cy_Time_to_high_limit 
+Boolean random
+
+//OUT variables
+//-------------
+Integer Enum OUT_Handle_Sensor [1,3] [0..2] // 0=NotinConf 1="up", 2="down"
+Boolean Enum OUT_Handle [0..3]  //0=untouched, 1="up", 2="down", 3=locked
+Integer Enum OUT_G_cylinders [0..2] //0=NotinConf, 1=high, 2=down
+Integer Enum OUT_D_cylinders [0..2] //0=NotinConf, 1=high, 2=down
+Boolean OUT_Hin [1,5]
+Boolean OUT_Hout [1,5]
+Integer Enum OUT_f_gearPosition_Sensor [1,3] [0..3]  // 0=NotinConf 1="extended", 2= "Retracted", 3= "Interm"
+Integer Enum OUT_l_gearPosition_Sensor [1,3] [0..3]  // 0=NotinConf 1="extended", 2= "Retracted", 3= "Interm"
+Integer Enum OUT_r_gearPosition_Sensor [1,3] [0..3]  // 0=NotinConf 1="extended", 2= "Retracted", 3= "Interm"
+Integer Enum OUT_f_door_Sensor [1,3] [0..2]  // 0=NotinConf 1="closed", 2= "open"
+Integer Enum OUT_l_door_Sensor [1,3] [0..2]  // 0=NotinConf 1="closed", 2= "open"
+Integer Enum OUT_r_door_Sensor [1,3] [0..2]  // 0=NotinConf 1="closed", 2= "open"
+Boolean OUT_General_EV[1,2]
+Boolean OUT_close_EV[1,2]
+Boolean OUT_open_EV[1,2]
+Boolean OUT_retract_EV[1,2]
+Boolean OUT_extend_EV[1,2] 
+Boolean OUT_anomaly [1,2] 
+Boolean OUT_Time_to_close_switch
+
+///************************///
+///* FLEXIBLE CONSTRAINTS *///
+///************************///
+LGS=1
+LGS=Pilot_Interface
+LGS>=Hydraulic_Circuit
+2*LGS>=Digital_Controller[1]+Digital_Controller[2]
+Hydraulic_Circuit=1 -> Digital_Controller[1]+Digital_Controller[2]=2
+Hydraulic_Circuit*Analog_Controller=0
+//Part1: 
+Pilot_Interface=1
+Pilot_Interface>0 -> OUT_Handle >0 /\ (Light[1]>1 /\ Light[2]>1 /\ Light[3]>1)
+//Part2: 
+Hydraulic_Circuit = Cylinder_Set
+f_D_Cylinder >0 <-> Cylinder_Set>0 
+r_D_Cylinder >0 <-> Cylinder_Set>0 
+l_D_Cylinder >0 <-> Cylinder_Set>0 
+f_G_Cylinder >0 <-> Cylinder_Set>0 
+r_G_Cylinder >0 <-> Cylinder_Set>0 
+l_G_Cylinder >0 <-> Cylinder_Set>0 
+//--------------------------------
+Hydraulic_Circuit=1 -> (Gear_Set[1]+Gear_Set[2]+Gear_Set[3] = 3 )
+f_Gear>0 <-> Gear_Set[1]=1
+(f_G_Latching_box[1]*f_G_Latching_box[2]>0) <-> Gear_Set[1]=1
+r_Gear>0 <-> Gear_Set[2]=1
+(r_G_Latching_box[1]*r_G_Latching_box[2]>0) <-> Gear_Set[2]=1
+l_Gear>0 <-> Gear_Set[3]=1
+(l_G_Latching_box[1]*l_G_Latching_box[2]>0) <-> Gear_Set[3]=1
+//---------------------------------------------------------------
+Hydraulic_Circuit=1 -> (Door_Set[1]+Door_Set[2]+Door_Set[3] = 3 )
+f_Door>0 <-> Door_Set[1]=1
+(f_D_Latching_box[1]*f_D_Latching_box[2]>0) <-> Door_Set[1]=1
+r_Door>0 <-> Door_Set[2]=1
+(r_D_Latching_box[1]*r_D_Latching_box[2]>0) <-> Door_Set[2]=1
+l_Door>0 <-> Door_Set[3]=1
+(l_D_Latching_box[1]*l_D_Latching_box[2]>0) <-> Door_Set[3]=1
+//-----------------------------------------------------------
+Hydraulic_Circuit=Sensors
+Analog_switch_Sensor[1]*Analog_switch_Sensor[2]*Analog_switch_Sensor[3] >0 <-> Sensors>0
+OUT_f_gearPosition_Sensor[1]*OUT_f_gearPosition_Sensor[2]*OUT_f_gearPosition_Sensor[3] >0 <-> Sensors>0
+OUT_r_gearPosition_Sensor[1]*OUT_r_gearPosition_Sensor[2]*OUT_r_gearPosition_Sensor[3] >0 <-> Sensors>0
+OUT_l_gearPosition_Sensor[1]*OUT_l_gearPosition_Sensor[2]*OUT_l_gearPosition_Sensor[3] >0 <-> Sensors>0
+OUT_f_door_Sensor[1]*OUT_f_door_Sensor[2]*OUT_f_door_Sensor[3] >0 <-> Sensors>0
+OUT_r_door_Sensor[1]*OUT_r_door_Sensor[2]*OUT_r_door_Sensor[3] >0 <-> Sensors>0
+OUT_l_door_Sensor[1]*OUT_l_door_Sensor[2]*OUT_l_door_Sensor[3] >0 <-> Sensors>0
+f_shockAbsorber_Sensor[1]*f_shockAbsorber_Sensor[2]*f_shockAbsorber_Sensor[3] >0 <-> Sensors>0
+r_shockAbsorber_Sensor[1]*r_shockAbsorber_Sensor[2]*r_shockAbsorber_Sensor[3] >0 <-> Sensors>0
+l_shockAbsorber_Sensor[1]*l_shockAbsorber_Sensor[2]*l_shockAbsorber_Sensor[3] >0 <-> Sensors>0
+Circuit_pressuried_Sensor[1]*Circuit_pressuried_Sensor[2]*Circuit_pressuried_Sensor[3] >0 <-> Sensors>0
+//-----------------------------------------------------
+Hydraulic_Circuit>0 <-> EV[1]*EV[2]*EV[3]*EV[4]*EV[5]>0 
+OUT_Hin[1]>0 <-> EV[1]>0
+OUT_Hin[2]>0 <-> EV[2]>0
+OUT_Hin[3]>0 <-> EV[3]>0
+OUT_Hin[4]>0 <-> EV[4]>0
+OUT_Hin[5]>0 <-> EV[5]>0
+OUT_Hout[1]>0 -> EV[1]>0
+OUT_Hout[2]>0 -> EV[2]>0
+OUT_Hout[3]>0 -> EV[3]>0
+OUT_Hout[4]>0 -> EV[4]>0
+OUT_Hout[5]>0 -> EV[5]>0
+//Part3
+EV_Commands[1]=Digital_Controller[1]
+EV_Commands[1]>=OUT_retract_EV[1] /\ EV_Commands[1]>=OUT_extend_EV[1] /\ OUT_retract_EV[1]*OUT_extend_EV[1]=0 
+EV_Commands[1]>=OUT_open_EV[1] /\ EV_Commands[1]>=OUT_close_EV[1] /\ OUT_open_EV[1]*OUT_close_EV[1]=0 
+OUT_General_EV[1] >0 ->  EV_Commands[1]>0
+//-----------------------------------
+EV_Commands[2]=Digital_Controller[2]
+EV_Commands[2]>=OUT_retract_EV[2] /\ EV_Commands[2]>=OUT_extend_EV[2] /\ OUT_retract_EV[2]*OUT_extend_EV[2]=0 
+EV_Commands[2]>=OUT_open_EV[2] /\ EV_Commands[2]>=OUT_close_EV[2] /\ OUT_open_EV[2]*OUT_close_EV[2]=0 
+OUT_General_EV[2] >0 ->  EV_Commands[2]>0
+//--------------------------------------
+Cockpit_commands[1]=Digital_Controller[1]
+Cockpit_commands[1] >= gear_locked_down[1]
+Cockpit_commands[1] >= gear_maneuvering[1] 
+Cockpit_commands[1] >= OUT_anomaly[1]
+gear_locked_down[1] + gear_maneuvering[1] + OUT_anomaly[1] <= 3
+//---------------------------------------
+Cockpit_commands[2]=Digital_Controller[2]
+Cockpit_commands[2] >= gear_locked_down[2]
+Cockpit_commands[2] >= gear_maneuvering[2] 
+Cockpit_commands[2] >= OUT_anomaly[2]
+gear_locked_down[2] + gear_maneuvering[2] + OUT_anomaly[2] <= 3
+//Part4
+LGS>=Manual_Crank
+LGS>=Analog_Controller
+
+//GEneric constraints
+OUT_Time_to_close_switch=0
+OUT_G_cylinders = IN_G_cylinders
+OUT_D_cylinders = IN_D_cylinders
+OUT_Handle>0
+
+//General constraints
+compositeState LGS_Nominal
+	concernLevel general_Nominal_cl
+		simpleConstraintState general_Nominal
+			Hydraulic_Circuit=1
+			Digital_Controller [1]+Digital_Controller [2]=2
+	end_concernLevel general_Nominal_cl
+	
+	concernLevel handle
+		/*A*/simpleConstraintState handle_up
+			//OUT_Handle=1
+			OUT_Handle_Sensor [ 1 ]=1 /\ OUT_Handle_Sensor [ 2 ]=1 /\ OUT_Handle_Sensor [ 3]=1
+		simpleConstraintState handle_down
+			//OUT_Handle=2
+			OUT_Handle_Sensor [ 1 ]=2 /\ OUT_Handle_Sensor [ 2 ]=2 /\ OUT_Handle_Sensor [ 3 ]=2
+		simpleConstraintState handle_inactive
+			OUT_Handle_Sensor [ 1 ]=0 /\ OUT_Handle_Sensor [ 2 ]=0 /\ OUT_Handle_Sensor [ 3 ]=0 /\ OUT_General_EV[1] =0 /\ OUT_General_EV[2] =0
+				
+	end_concernLevel handle
+
+	concernLevel gears_cl
+		/*A*/simpleConstraintState retracted
+	 		OUT_f_gearPosition_Sensor [1] = 2
+	 		OUT_f_gearPosition_Sensor [2] = 2
+	 		OUT_f_gearPosition_Sensor [3] = 2
+	 		OUT_r_gearPosition_Sensor [1] = 2
+	 		OUT_r_gearPosition_Sensor [2] = 2
+	 		OUT_r_gearPosition_Sensor [3] = 2
+	 		OUT_l_gearPosition_Sensor [1] = 2
+	 		OUT_l_gearPosition_Sensor [2] = 2
+	 		OUT_l_gearPosition_Sensor [3] = 2
+	 		Light[1]=0
+	 		Light[2]=0
+	 		Light[3]=0
+	 		(IN_D_cylinders=2 /\ ( (IN_f_gearPosition_Sensor [1] = 2 \/ IN_f_gearPosition_Sensor [2] = 2 \/ IN_f_gearPosition_Sensor [3] = 2 \/ IN_r_gearPosition_Sensor [1] = 2  \/ IN_r_gearPosition_Sensor [2] = 2 \/ IN_r_gearPosition_Sensor [3] = 2 \/ IN_l_gearPosition_Sensor [1] = 2 \/ IN_l_gearPosition_Sensor [2] = 2 \/ IN_l_gearPosition_Sensor [3] = 2)) /\ (IN_Handle_Sensor[1]=1 /\ IN_Handle_Sensor[2]=1 /\ IN_Handle_Sensor[3]=1)) -> OUT_retract_EV[1]=0 /\ OUT_retract_EV[2]=0
+	 		(IN_D_cylinders=2 /\ ( (IN_f_gearPosition_Sensor [1] = 2 \/ IN_f_gearPosition_Sensor [2] = 2 \/ IN_f_gearPosition_Sensor [3] = 2 \/ IN_r_gearPosition_Sensor [1] = 2  \/ IN_r_gearPosition_Sensor [2] = 2 \/ IN_r_gearPosition_Sensor [3] = 2 \/ IN_l_gearPosition_Sensor [1] = 2 \/ IN_l_gearPosition_Sensor [2] = 2 \/ IN_l_gearPosition_Sensor [3] = 2)) /\ (IN_Handle_Sensor[1]=1 /\ IN_Handle_Sensor[2]=1 /\ IN_Handle_Sensor[3]=1)) -> OUT_open_EV[1]=0 /\ OUT_open_EV[2]=0
+	 		(IN_D_cylinders=2 /\ ( (IN_f_gearPosition_Sensor [1] = 2 \/ IN_f_gearPosition_Sensor [2] = 2 \/ IN_f_gearPosition_Sensor [3] = 2 \/ IN_r_gearPosition_Sensor [1] = 2  \/ IN_r_gearPosition_Sensor [2] = 2 \/ IN_r_gearPosition_Sensor [3] = 2 \/ IN_l_gearPosition_Sensor [1] = 2 \/ IN_l_gearPosition_Sensor [2] = 2 \/ IN_l_gearPosition_Sensor [3] = 2)) /\ (IN_Handle_Sensor[1]=1 /\ IN_Handle_Sensor[2]=1 /\ IN_Handle_Sensor[3]=1)) -> (OUT_close_EV[1]=1 /\ OUT_close_EV[2]=1)
+	 		
+	 		
+	 		((IN_Hout[1] = IN_Hin[1] /\ IN_Hout[2] = 0 /\ IN_Hout[3] = 0 /\ IN_Hout[4] = 0 /\ IN_Hout[5] = 0 ) /\ (IN_f_gearPosition_Sensor [1] = 2 \/ IN_f_gearPosition_Sensor [2] = 2\/ IN_f_gearPosition_Sensor [3] = 2 \/ IN_r_gearPosition_Sensor [1] = 2  \/ IN_r_gearPosition_Sensor [2] = 2 \/ IN_r_gearPosition_Sensor [3] = 2 \/ IN_l_gearPosition_Sensor [1] = 2 \/ IN_l_gearPosition_Sensor [2] = 2 \/ IN_l_gearPosition_Sensor [3] = 2) /\  (IN_Handle_Sensor[1]=1 /\ IN_Handle_Sensor[2]=1)) -> (OUT_Handle=0)
+	 		
+	 	simpleConstraintState extended
+	 		OUT_f_gearPosition_Sensor [1] = 1
+	 		OUT_f_gearPosition_Sensor [2] = 1
+	 		OUT_f_gearPosition_Sensor [3] = 1
+	 		OUT_r_gearPosition_Sensor [1] = 1
+	 		OUT_r_gearPosition_Sensor [2] = 1
+	 		OUT_r_gearPosition_Sensor [3] = 1
+	 		OUT_l_gearPosition_Sensor [1] = 1
+	 		OUT_l_gearPosition_Sensor [2] = 1
+	 		OUT_l_gearPosition_Sensor [3] = 1
+	 		Light[1]=2
+	 		Light[2]=2
+	 		Light[3]=2
+	 		(IN_D_cylinders=2 /\  ((IN_f_gearPosition_Sensor [1] = 1 \/ IN_f_gearPosition_Sensor [2] = 1 \/ IN_f_gearPosition_Sensor [3] = 1 \/ IN_r_gearPosition_Sensor [1] = 1  \/ IN_r_gearPosition_Sensor [2] = 1 \/ IN_r_gearPosition_Sensor [3] = 1 \/ IN_l_gearPosition_Sensor [1] = 1 \/ IN_l_gearPosition_Sensor [2] = 1 \/ IN_l_gearPosition_Sensor [3] = 1)) /\ (IN_Handle_Sensor[1]=2 /\ IN_Handle_Sensor[2]=2 /\ IN_Handle_Sensor[3]=2)) -> OUT_extend_EV[1]=0 /\ OUT_extend_EV[2]=0	
+	 		//When the doors are opened, the handle is requiring the extention of gears, and we have reached the extention state, then the door shall start closing
+	 		(IN_D_cylinders=2 /\  ((IN_f_gearPosition_Sensor [1] = 1 \/ IN_f_gearPosition_Sensor [2] = 1 \/ IN_f_gearPosition_Sensor [3] = 1 \/ IN_r_gearPosition_Sensor [1] = 1  \/ IN_r_gearPosition_Sensor [2] = 1 \/ IN_r_gearPosition_Sensor [3] = 1 \/ IN_l_gearPosition_Sensor [1] = 1 \/ IN_l_gearPosition_Sensor [2] = 1 \/ IN_l_gearPosition_Sensor [3] = 1)) /\ (IN_Handle_Sensor[1]=2 /\ IN_Handle_Sensor[2]=2 /\ IN_Handle_Sensor[3]=2)) -> (OUT_open_EV[1]=0 /\ OUT_open_EV[2]=0)
+	 		(IN_D_cylinders=2 /\  ((IN_f_gearPosition_Sensor [1] = 1 \/ IN_f_gearPosition_Sensor [2] = 1 \/ IN_f_gearPosition_Sensor [3] = 1 \/ IN_r_gearPosition_Sensor [1] = 1  \/ IN_r_gearPosition_Sensor [2] = 1 \/ IN_r_gearPosition_Sensor [3] = 1 \/ IN_l_gearPosition_Sensor [1] = 1 \/ IN_l_gearPosition_Sensor [2] = 1 \/ IN_l_gearPosition_Sensor [3] = 1)) /\ (IN_Handle_Sensor[1]=2 /\ IN_Handle_Sensor[2]=2 /\ IN_Handle_Sensor[3]=2)) -> (OUT_close_EV[1]=1 /\ OUT_close_EV[2]=1)
+	 		gear_locked_down [1] =1 /\ gear_locked_down [2] =1
+	 		
+	 		
+	 		((IN_Hout[1] = IN_Hin[1] /\ IN_Hout[2] = 0 /\ IN_Hout[3] = 0 /\ IN_Hout[4] = 0 /\ IN_Hout[5] = 0) /\ (IN_f_gearPosition_Sensor [1] = 1 \/ IN_f_gearPosition_Sensor [2] = 1 \/ IN_f_gearPosition_Sensor [3] = 1 \/ IN_r_gearPosition_Sensor [1] = 1  \/ IN_r_gearPosition_Sensor [2] = 1 \/ IN_r_gearPosition_Sensor [3] = 1 \/ IN_l_gearPosition_Sensor [1] = 1 \/ IN_l_gearPosition_Sensor [2] = 1 \/ IN_l_gearPosition_Sensor [3] = 1) /\  (IN_Handle_Sensor[1]=2 /\ IN_Handle_Sensor[2]=2)) -> (OUT_Handle=0)
+	 		
+	 	simpleConstraintState failure_gear
+	 		OUT_anomaly[1]=1 /\ OUT_anomaly[2]=1		
+	end_concernLevel gears_cl 
+	
+	concernLevel doors_cl
+		simpleConstraintState Opened
+	 		OUT_f_door_Sensor [1] = 2
+	 		OUT_f_door_Sensor [2] = 2
+	 		OUT_f_door_Sensor [3] = 2
+	 		OUT_r_door_Sensor [1] = 2
+	 		OUT_r_door_Sensor [2] = 2
+	 		OUT_r_door_Sensor [3] = 2
+	 		OUT_l_door_Sensor [1] = 2
+	 		OUT_l_door_Sensor [2] = 2
+	 		OUT_l_door_Sensor [3] = 2
+	 		//1="extended", 2= "Retracted"
+	 		//When the doors are open, the gears are in retracted position, but the handle is requiring extension --> then the extension EV shall be called 
+	 		(/*(IN_Hout[5] = 1) /\ */(IN_Hout[3] = 1) /\  (IN_D_cylinders=2) /\ (IN_f_gearPosition_Sensor [1] = 2 \/ IN_f_gearPosition_Sensor [2] = 2 \/ IN_f_gearPosition_Sensor [3] = 2 \/ IN_r_gearPosition_Sensor [1] = 2  \/ IN_r_gearPosition_Sensor [2] = 2 \/ IN_r_gearPosition_Sensor [3] = 2 \/ IN_l_gearPosition_Sensor [1] = 2 \/ IN_l_gearPosition_Sensor [2] = 2 \/ IN_l_gearPosition_Sensor [3] = 2) /\  (IN_Handle_Sensor[1]=2 /\ IN_Handle_Sensor[2]=2)) -> (OUT_extend_EV[1]=1 /\ OUT_extend_EV[2]=1)
+////			When the doors are open, the gears are in an extended position, but the handle is requiring retraction --> then the retraction EV shall be called 
+	 		(/*(IN_Hout[4] = 1) /\ */(IN_Hout[3] = 1) /\ (IN_D_cylinders=2) /\ (IN_f_gearPosition_Sensor [1] = 1 \/ IN_f_gearPosition_Sensor [2] = 1 \/ IN_f_gearPosition_Sensor [3] = 1 \/ IN_r_gearPosition_Sensor [1] = 1  \/ IN_r_gearPosition_Sensor [2] = 1 \/ IN_r_gearPosition_Sensor [3] = 1 \/ IN_l_gearPosition_Sensor [1] = 1 \/ IN_l_gearPosition_Sensor [2] = 1 \/ IN_l_gearPosition_Sensor [3] = 1) /\ (IN_Handle_Sensor[1]=1 /\ IN_Handle_Sensor[2]=1)) -> (OUT_retract_EV[1]=1 /\ OUT_retract_EV[2]=1)
+//	 		
+	 	/*A*/simpleConstraintState Closed
+	 		OUT_f_door_Sensor [1] = 1	
+			OUT_f_door_Sensor [2] = 1
+			OUT_f_door_Sensor [3] = 1
+			OUT_r_door_Sensor [1] = 1
+			OUT_r_door_Sensor [2] = 1
+			OUT_r_door_Sensor [3] = 1
+			OUT_l_door_Sensor [1] = 1
+			OUT_l_door_Sensor [2] = 1
+			OUT_l_door_Sensor [3] = 1
+	 		//Probably need a condition here !!!!!!
+	 		//OUT_close_EV[1]=0//Verify for earlier states, changed it at state 12
+	 		//OUT_close_EV[2]=0
+	 		
+	 		
+	 		
+	 	simpleConstraintState failure_doors
+	 		OUT_anomaly[1]=1 /\ OUT_anomaly[2]=1		
+	end_concernLevel doors_cl
+	
+	concernLevel cynlinders_cl
+		compositeState cylinder_states
+			concernLevel gear_cylinder_cl
+				simpleConstraintState inactive_G_cylinders
+					random=1
+				simpleConstraintState G_cylinders_high
+			 		f_G_Latching_box[1]= 2
+			 		f_G_Latching_box[2]= 1
+			 		r_G_Latching_box[1]= 2
+			 		r_G_Latching_box[2]= 1
+			 		l_G_Latching_box[1]= 2
+			 		l_G_Latching_box[2]= 1
+			 		OUT_G_cylinders=1 
+			 	simpleConstraintState G_cylinders_down
+			 		f_G_Latching_box[1]= 1
+			 		f_G_Latching_box[2]= 2
+			 		r_G_Latching_box[1]= 1
+			 		r_G_Latching_box[2]= 2
+			 		l_G_Latching_box[1]= 1
+			 		l_G_Latching_box[2]= 2
+			 		OUT_G_cylinders=2
+			end_concernLevel gear_cylinder_cl
+			 
+			concernLevel door_cylinder_cl
+				simpleConstraintState inactive_D_cylinders
+					random=1
+			 	simpleConstraintState D_cylinders_high
+			 		f_D_Latching_box[1]= 2
+			 		f_D_Latching_box[2]= 2
+			 		r_D_Latching_box[1]= 2
+			 		r_D_Latching_box[2]= 2
+			 		l_D_Latching_box[1]= 2
+			 		l_D_Latching_box[2]= 2
+			 		OUT_D_cylinders=1 
+			 	simpleConstraintState D_cylinders_down
+			 		OUT_D_cylinders=2
+	 		end_concernLevel door_cylinder_cl
+		end_compositeState cylinder_states
+		
+		simpleConstraintState failure_cylinder
+			OUT_anomaly[1]=1 /\ OUT_anomaly[2]=1		
+		end_concernLevel cynlinders_cl
+		
+	concernLevel electro_valves_cl
+		compositeState electro_valves_states
+			concernLevel general_EV_cl
+		 		simpleConstraintState nn_pressurized_general_EV
+		 			OUT_Hout[1] = 0
+		 		simpleConstraintState pressurized_general_EV
+		 			OUT_Hout[1] = OUT_Hin[1] 
+		 			Circuit_pressuried_Sensor[1]=2
+		 			Circuit_pressuried_Sensor[2]=2
+		 			Circuit_pressuried_Sensor[3]=2
+		 			
+		 			//when the extension EV is active, the gears are extended, but the handle is requiring retraction
+					((IN_Hout [5]=0  /\ IN_extend_EV [ 1 ]=0 /\ IN_extend_EV [ 2 ]=0 ) /\ (IN_f_gearPosition_Sensor [1] = 1 /\ IN_Handle_Sensor[1]=1) /\ (IN_f_gearPosition_Sensor [1] = 1 /\ IN_Handle_Sensor[1]=1)) -> OUT_open_EV [1]=1 /\ OUT_open_EV [2]=1 
+					//when the extension EV is active, the gears are retracted, but the handle is requiring extention
+		 			((IN_Hout [4]=0  /\ IN_retract_EV [ 1 ]=0 /\ IN_retract_EV [ 2 ]=0 ) /\ (IN_f_gearPosition_Sensor [1] = 2 /\ IN_Handle_Sensor[1]=2) /\ (IN_f_gearPosition_Sensor [1] = 2 /\ IN_Handle_Sensor[1]=2)) -> OUT_open_EV [1]=1 /\ OUT_open_EV [2]=1 
+		 	
+		 	end_concernLevel general_EV_cl
+		 	
+		 	concernLevel close_EV_cl
+		 		simpleConstraintState nn_pressurized_close_EV
+		 			/*A*/OUT_Hout[2] = 0
+		 		simpleConstraintState pressurized_close_EV
+		 			OUT_Hout[2] = OUT_Hin[2]
+		 	end_concernLevel close_EV_cl
+		 	
+		 	concernLevel open_EV_cl
+		 		simpleConstraintState nn_pressurized_open_EV
+		 			/*A*/OUT_Hout[3] = 0
+		 		simpleConstraintState pressurized_open_EV
+		 			OUT_Hout[3] = OUT_Hin[3]
+		 		end_concernLevel open_EV_cl
+		 	
+		 	concernLevel retract_EV_cl
+		 		simpleConstraintState nn_pressurized_retract_EV
+		 			/*A*/OUT_Hout[4] = 0
+		 		simpleConstraintState pressurized_retract_EV
+		 			OUT_Hout[4] = OUT_Hin[4]
+		 		end_concernLevel retract_EV_cl
+		 	
+		 	concernLevel extend_EV_cl
+		 		simpleConstraintState nn_pressurized_extend_EV
+		 			OUT_Hout[5] = 0
+		 		simpleConstraintState pressurized_extend_EV
+		 			OUT_Hout[5] = OUT_Hin[5]
+		 		end_concernLevel extend_EV_cl
+		 end_compositeState electro_valves_states
+		 simpleConstraintState failure_EV
+		 	OUT_anomaly[1]=1 /\ OUT_anomaly[2]=1		 	
+	end_concernLevel electro_valves_cl
+	
+	concernLevel Analog_switch_cl
+ 		simpleConstraintState Analog_switch_closed
+	 		OUT_General_EV[1] =1
+	 		OUT_General_EV[2] =1
+ 			Analog_switch_Sensor [1] = 2
+ 			Analog_switch_Sensor [2] = 2
+ 			Analog_switch_Sensor [3] = 2
+ 			OUT_Time_to_close_switch=1
+ 		simpleConstraintState Analog_switch_open
+ 			Analog_switch_Sensor [1] = 1
+ 			Analog_switch_Sensor [2] = 1
+ 			Analog_switch_Sensor [3] = 1
+ 			(IN_Handle_Sensor [ 1 ]>0 /\ IN_Handle_Sensor [ 2 ]>0 /\ IN_Handle_Sensor [ 3 ]>0) -> OUT_Time_to_close_switch=1
+ 			((IN_Handle>0) /\ IN_Time_to_close_switch=1)  -> (OUT_General_EV[1] =1 /\ OUT_General_EV[2] =1)
+ 		simpleConstraintState failure_analog_switch
+ 			OUT_anomaly[1]=1 /\ OUT_anomaly[2]=1		
+	end_concernLevel Analog_switch_cl
+end_compositeState LGS_Nominal
+  
+compositeState LGS_Analog
+	concernLevel general_Alanlog_cl
+		simpleConstraintState general_Analog
+			Analog_Controller=1
+	end_concernLevel general_Alanlog_cl
+end_compositeState LGS_Analog
+
+Start transition to LGS_Nominal
+Start transition to LGS_Nominal.handle.handle_up
+Start transition to LGS_Analog.general_Alanlog_cl.general_Analog
+Start transition to LGS_Nominal.gears_cl.retracted
+Start transition to LGS_Nominal.doors_cl.Closed
+Start transition to LGS_Nominal.cynlinders_cl.cylinder_states.gear_cylinder_cl.G_cylinders_high
+Start transition to LGS_Nominal.cynlinders_cl.cylinder_states.door_cylinder_cl.D_cylinders_high
+Start transition to LGS_Nominal.electro_valves_cl.electro_valves_states.close_EV_cl.pressurized_close_EV
+Start transition to LGS_Nominal.electro_valves_cl.electro_valves_states.extend_EV_cl.nn_pressurized_extend_EV
+Start transition to LGS_Nominal.electro_valves_cl.electro_valves_states.general_EV_cl.nn_pressurized_general_EV
+Start transition to LGS_Nominal.electro_valves_cl.electro_valves_states.open_EV_cl.nn_pressurized_open_EV 
+Start transition to LGS_Nominal.electro_valves_cl.electro_valves_states.retract_EV_cl.pressurized_retract_EV
+Start transition to LGS_Nominal.Analog_switch_cl.Analog_switch_open
+Start transition to LGS_Nominal.cynlinders_cl.cylinder_states
+
+//Transitions on the handle
+When LGS_Nominal if IN_Handle=1 transition from LGS_Nominal.handle.handle_down to LGS_Nominal.handle.handle_up
+When LGS_Nominal if IN_Handle=2 transition from LGS_Nominal.handle.handle_up to LGS_Nominal.handle.handle_down
+When LGS_Nominal if IN_Handle=0 transition from LGS_Nominal.handle.handle_down to LGS_Nominal.handle.handle_inactive
+When LGS_Nominal if IN_Handle=0 transition from LGS_Nominal.handle.handle_up to LGS_Nominal.handle.handle_inactive
+
+
+//Transition on gears states
+/*A*/When LGS_Nominal if IN_G_cylinders=1 transition from LGS_Nominal.gears_cl.extended to LGS_Nominal.gears_cl.retracted
+When LGS_Nominal if IN_G_cylinders=2 transition from LGS_Nominal.gears_cl.retracted to LGS_Nominal.gears_cl.extended
+
+////Transition on doors states
+/*A*/When LGS_Nominal if IN_D_cylinders=1 transition from LGS_Nominal.doors_cl.Opened to LGS_Nominal.doors_cl.Closed
+When LGS_Nominal if IN_D_cylinders=2 transition from LGS_Nominal.doors_cl.Closed to LGS_Nominal.doors_cl.Opened
+
+//Transition on first level cylinders states
+When LGS_Nominal if (Cy_Time_to_down<Cy_Time_to_down_limit) transition from LGS_Nominal.cynlinders_cl.failure_cylinder to LGS_Nominal.cynlinders_cl.cylinder_states
+
+When LGS_Nominal if (Cy_Time_to_down>Cy_Time_to_down_limit) transition from LGS_Nominal.cynlinders_cl.cylinder_states to LGS_Nominal.cynlinders_cl.failure_cylinder
+//----------
+When LGS_Nominal.cynlinders_cl.cylinder_states if (IN_Hout[4] = 0 /\ IN_Hout[5] = 0) transition from LGS_Nominal.cynlinders_cl.cylinder_states.gear_cylinder_cl.G_cylinders_down to LGS_Nominal.cynlinders_cl.cylinder_states.gear_cylinder_cl.inactive_G_cylinders
+When LGS_Nominal.cynlinders_cl.cylinder_states if (IN_Hout[4] = 0 /\ IN_Hout[5] = 0) transition from LGS_Nominal.cynlinders_cl.cylinder_states.gear_cylinder_cl.G_cylinders_high to LGS_Nominal.cynlinders_cl.cylinder_states.gear_cylinder_cl.inactive_G_cylinders
+When LGS_Nominal.cynlinders_cl.cylinder_states if (IN_Hout[2] = 0 /\ IN_Hout[3] = 0) transition from LGS_Nominal.cynlinders_cl.cylinder_states.door_cylinder_cl.D_cylinders_high to LGS_Nominal.cynlinders_cl.cylinder_states.door_cylinder_cl.inactive_D_cylinders
+When LGS_Nominal.cynlinders_cl.cylinder_states if (IN_Hout[2] = 0 /\ IN_Hout[3] = 0) transition from LGS_Nominal.cynlinders_cl.cylinder_states.door_cylinder_cl.D_cylinders_down to LGS_Nominal.cynlinders_cl.cylinder_states.door_cylinder_cl.inactive_D_cylinders
+When LGS_Nominal.cynlinders_cl.cylinder_states if IN_Hout[4] = IN_Hin[4] transition from LGS_Nominal.cynlinders_cl.cylinder_states.gear_cylinder_cl.G_cylinders_down to LGS_Nominal.cynlinders_cl.cylinder_states.gear_cylinder_cl.G_cylinders_high
+When LGS_Nominal.cynlinders_cl.cylinder_states if IN_Hout[5] = IN_Hin[5] transition from LGS_Nominal.cynlinders_cl.cylinder_states.gear_cylinder_cl.G_cylinders_high to LGS_Nominal.cynlinders_cl.cylinder_states.gear_cylinder_cl.G_cylinders_down
+When LGS_Nominal.cynlinders_cl.cylinder_states if IN_Hout[2] = IN_Hin[2] transition from LGS_Nominal.cynlinders_cl.cylinder_states.door_cylinder_cl.D_cylinders_down to LGS_Nominal.cynlinders_cl.cylinder_states.door_cylinder_cl.D_cylinders_high
+When LGS_Nominal.cynlinders_cl.cylinder_states if IN_Hout[3] = IN_Hin[3] transition from LGS_Nominal.cynlinders_cl.cylinder_states.door_cylinder_cl.D_cylinders_high to LGS_Nominal.cynlinders_cl.cylinder_states.door_cylinder_cl.D_cylinders_down
+When LGS_Nominal.cynlinders_cl.cylinder_states if IN_Hout[4] = IN_Hin[4] transition from LGS_Nominal.cynlinders_cl.cylinder_states.gear_cylinder_cl.inactive_G_cylinders to LGS_Nominal.cynlinders_cl.cylinder_states.gear_cylinder_cl.G_cylinders_high
+When LGS_Nominal.cynlinders_cl.cylinder_states if IN_Hout[5] = IN_Hin[5] transition from LGS_Nominal.cynlinders_cl.cylinder_states.gear_cylinder_cl.inactive_G_cylinders to LGS_Nominal.cynlinders_cl.cylinder_states.gear_cylinder_cl.G_cylinders_down
+When LGS_Nominal.cynlinders_cl.cylinder_states if IN_Hout[2] = IN_Hin[2] transition from LGS_Nominal.cynlinders_cl.cylinder_states.door_cylinder_cl.inactive_D_cylinders to LGS_Nominal.cynlinders_cl.cylinder_states.door_cylinder_cl.D_cylinders_high
+When LGS_Nominal.cynlinders_cl.cylinder_states if IN_Hout[3] = IN_Hin[3] transition from LGS_Nominal.cynlinders_cl.cylinder_states.door_cylinder_cl.inactive_D_cylinders to LGS_Nominal.cynlinders_cl.cylinder_states.door_cylinder_cl.D_cylinders_down
+
+//Transition on Electro_vale states
+When LGS_Nominal if ((EV_Time_to_open<EV_Time_to_open_limit) /\ (EV_Time_to_close<EV_Time_to_close_limit)) transition from LGS_Nominal.electro_valves_cl.failure_EV to LGS_Nominal.electro_valves_cl.electro_valves_states
+When LGS_Nominal if ((EV_Time_to_open>EV_Time_to_open_limit) \/ (EV_Time_to_close>EV_Time_to_close_limit))  transition from LGS_Nominal.electro_valves_cl.electro_valves_states to LGS_Nominal.electro_valves_cl.failure_EV
+//----------
+/*A*/When LGS_Nominal.electro_valves_cl.electro_valves_states if (IN_General_EV[1] =0 \/ IN_General_EV[2] =0) transition from LGS_Nominal.electro_valves_cl.electro_valves_states.general_EV_cl.pressurized_general_EV to LGS_Nominal.electro_valves_cl.electro_valves_states.general_EV_cl.nn_pressurized_general_EV
+/*A*/When LGS_Nominal.electro_valves_cl.electro_valves_states if (IN_open_EV[1] =0 \/ IN_open_EV[2] =0) transition from LGS_Nominal.electro_valves_cl.electro_valves_states.open_EV_cl.pressurized_open_EV to LGS_Nominal.electro_valves_cl.electro_valves_states.open_EV_cl.nn_pressurized_open_EV
+/*A*/When LGS_Nominal.electro_valves_cl.electro_valves_states if (IN_close_EV[1] =0 \/ IN_close_EV[2] =0) transition from LGS_Nominal.electro_valves_cl.electro_valves_states.close_EV_cl.pressurized_close_EV to LGS_Nominal.electro_valves_cl.electro_valves_states.close_EV_cl.nn_pressurized_close_EV
+/*A*/When LGS_Nominal.electro_valves_cl.electro_valves_states if (IN_retract_EV[1] =0 \/ IN_retract_EV[2] =0) transition from LGS_Nominal.electro_valves_cl.electro_valves_states.retract_EV_cl.pressurized_retract_EV to LGS_Nominal.electro_valves_cl.electro_valves_states.retract_EV_cl.nn_pressurized_retract_EV
+/*A*/When LGS_Nominal.electro_valves_cl.electro_valves_states if (IN_extend_EV[1] =0 \/ IN_extend_EV[2] =0) transition from LGS_Nominal.electro_valves_cl.electro_valves_states.extend_EV_cl.pressurized_extend_EV to LGS_Nominal.electro_valves_cl.electro_valves_states.extend_EV_cl.nn_pressurized_extend_EV
+When LGS_Nominal.electro_valves_cl.electro_valves_states if (IN_General_EV[1] =1 \/ IN_General_EV[2] =1) transition from LGS_Nominal.electro_valves_cl.electro_valves_states.general_EV_cl.nn_pressurized_general_EV to LGS_Nominal.electro_valves_cl.electro_valves_states.general_EV_cl.pressurized_general_EV
+When LGS_Nominal.electro_valves_cl.electro_valves_states if (IN_open_EV[1] =1 \/ IN_open_EV[2] =1) transition from LGS_Nominal.electro_valves_cl.electro_valves_states.open_EV_cl.nn_pressurized_open_EV to LGS_Nominal.electro_valves_cl.electro_valves_states.open_EV_cl.pressurized_open_EV
+When LGS_Nominal.electro_valves_cl.electro_valves_states if (IN_close_EV[1] =1 \/ IN_close_EV[2] =1) transition from LGS_Nominal.electro_valves_cl.electro_valves_states.close_EV_cl.nn_pressurized_close_EV to LGS_Nominal.electro_valves_cl.electro_valves_states.close_EV_cl.pressurized_close_EV
+When LGS_Nominal.electro_valves_cl.electro_valves_states if (IN_retract_EV[1] =1 \/ IN_retract_EV[2] =1) transition from LGS_Nominal.electro_valves_cl.electro_valves_states.retract_EV_cl.nn_pressurized_retract_EV to LGS_Nominal.electro_valves_cl.electro_valves_states.retract_EV_cl.pressurized_retract_EV
+When LGS_Nominal.electro_valves_cl.electro_valves_states if (IN_extend_EV[1] =1 \/ IN_extend_EV[2] =1) transition from LGS_Nominal.electro_valves_cl.electro_valves_states.extend_EV_cl.nn_pressurized_extend_EV to LGS_Nominal.electro_valves_cl.electro_valves_states.extend_EV_cl.pressurized_extend_EV
+//Transition of Analog Switch
+/*A*/When LGS_Nominal if (IN_Time_to_close_switch=0 /\ ((IN_Handle_Sensor [ 1 ]=1 /\ IN_Handle_Sensor [ 2 ]=1 /\ IN_Handle_Sensor [ 3 ]=1) \/ (IN_Handle_Sensor [ 1 ]=2 /\ IN_Handle_Sensor [ 2 ]=2 /\ IN_Handle_Sensor [ 3 ]=2))) transition from LGS_Nominal.Analog_switch_cl.Analog_switch_open to LGS_Nominal.Analog_switch_cl.Analog_switch_closed
+When LGS_Nominal if (IN_Time_to_close_switch=1 \/  (IN_Handle_Sensor [ 1 ]=0 /\ IN_Handle_Sensor [ 2 ]=0 /\ IN_Handle_Sensor [ 3 ]=0)) transition from LGS_Nominal.Analog_switch_cl.Analog_switch_closed to LGS_Nominal.Analog_switch_cl.Analog_switch_open
+When LGS_Nominal if (AS_Time_to_close > AS_Time_to_close_limit) transition from LGS_Nominal.Analog_switch_cl.Analog_switch_open to LGS_Nominal.Analog_switch_cl.failure_analog_switch
+When LGS_Nominal if (AS_Time_to_open > AS_Time_to_open_limit) transition from LGS_Nominal.Analog_switch_cl.Analog_switch_closed to LGS_Nominal.Analog_switch_cl.failure_analog_switch
+
+//Transition from Nominal to Analog
+if (IN_anomaly[1]=1 \/ IN_anomaly[2]=1) transition from LGS_Nominal to LGS_Analog
+
+//
+//
+//

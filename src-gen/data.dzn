@@ -1,0 +1,5 @@
+Battery_Life=[50,61,33]; 
+Consumption=45; 
+Max_consumption=77; 
+Op_consumption=70; 
+Power_Failure=0;
